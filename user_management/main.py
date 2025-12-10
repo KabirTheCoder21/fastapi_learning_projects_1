@@ -1,7 +1,7 @@
 from fastapi import  Body, FastAPI
 from typing import List
 from pydantic import ValidationError
-from user_management.models.user import User, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
+from fastapi_learning_projects_1.user_management.models.user import User, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
 
 app = FastAPI()
 
