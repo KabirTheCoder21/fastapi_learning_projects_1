@@ -1,7 +1,7 @@
-from fastapi import  Body, FastAPI
+from fastapi import  Body, FastAPI, Depends, HTTPException
 from typing import List
 from pydantic import ValidationError
-from user_management.models.user import User, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
+from user_management.models.user import User, User2, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
 
 app = FastAPI()
 
@@ -29,6 +29,43 @@ def get_users():
         "size":len(users_data),
         "data":results
     }
+
+@app.get("/{user_name}")
+def get_user_by_id(user_name:str):
+    try:
+        for ele in users_data:
+            if ele.get("name","").casefold()==user_name.casefold():
+                return ele
+        raise HTTPException(status_code = 404,detail="This user name does not exist")
+    except Exception as e:
+        if isinstance(e,HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/current_user/")
+def get_curr_user(token:str):
+    if token!="valid":
+        raise HTTPException(status_code = 401,desc="This user is not valid")
+    return {"msg":"Your learned 401 correctly."}
+
+def get_current_user():
+    return User2(name = "john",is_valid=True)
+
+@app.delete("/admin")
+def delete_user(user: User = Depends(get_current_user)):
+
+    if not user.is_valid:
+        raise HTTPException(status_code=401, detail="Invalid user")
+
+    for i, ele in enumerate(users_data):
+        if ele.get("name", "").casefold() == user.name.casefold():
+            users_data.pop(i)
+            return {"size":len(users_data),"result":users_data}
+    raise HTTPException(status_code=404, detail="User not found")
+
+
+
 @app.post("/create_user")
 def create_user(body:dict=Body(...,example={
             "name": "Sohan",

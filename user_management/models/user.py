@@ -42,3 +42,6 @@ class UsersResponse(BaseModel):
     size: int
     data: List[UserResponseItem]
 
+class User2(BaseModel):
+    name:str
+    is_valid:bool
