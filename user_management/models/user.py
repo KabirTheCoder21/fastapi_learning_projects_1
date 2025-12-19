@@ -45,3 +45,8 @@ class UsersResponse(BaseModel):
 class User2(BaseModel):
     name:str
     is_valid:bool
+
+class UserCreate(BaseModel):
+    name: str
+    email: Optional[EmailStr] = None
+    age:int

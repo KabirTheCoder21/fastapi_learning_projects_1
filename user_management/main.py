@@ -1,7 +1,7 @@
 from fastapi import  Body, FastAPI, Depends, HTTPException
 from typing import List
 from pydantic import ValidationError
-from user_management.models.user import User, User2, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
+from user_management.models.user import User, User2, UserCreate, UserResponseInvalid, UserResponseItem, UserResponseValid, UsersResponse
 
 app = FastAPI()
 
@@ -107,3 +107,13 @@ def add_mail(detail:User):
             users_data[i].update(updated_fields)
             return {"msg: Successfully added."}
     return {"msg:Something went wrong."}
+
+@app.post("/users")
+def create_user2(body:UserCreate):
+    user = body.model_dump()
+    if user["age"]<18:
+        raise HTTPException(
+            status_code = 400,
+            detail="Age must be greater than 18"
+        )
+    return {"Msg":"Succesfully created"}
